@@ -3,32 +3,65 @@ const io = require('socket.io');
 const createServer = require('http').createServer;
 
 const Client = require('./lib/Client');
+const Room = require('./lib/Room');
 
 class Server{
     constructor(){
         
         // Server
-        this._app       = express();
-        this._server    = createServer(this._app);
-        this._io        = io(this._server);
+        this.app       = express();
+        this.server    = createServer(this.app);
+        this.io        = io(this.server);
 
         // Sockets
-        this._clients   = [];
+        this.clients = [];
+
+        this.rooms = [];
 
         this.init();
     }
 
     init(){
-        // Tell the server to listen on the port `8181`
-        this._server.listen(5876, ()=>{
-            console.log('Server listening on 127.0.0.1:5876');
+        this.server.listen(5876, ()=>{
+            console.log('Server listening on port 5876');
         });
 
-        // Handle new websocket connections
-        this._io.sockets.on('connection', (socket)=>{
-            const newSocket = new Client(socket, this);
-            this._clients.push(newSocket);
+        this.io.sockets.on('connection', (socket)=>{
+            const client = new Client(socket, this);
+            this.clients.push(client);
+
+            socket.on('join', (roomUid) => {
+                client.roomUid = roomUid;
+                this.handleRoom(roomUid, client.uid);
+            });
         });
+    }
+
+    handleRoom(roomUid, clientUid){
+        let foundRoom = false;
+        for (let i = 0; i < this.rooms.length; i++){
+            if (roomUid === this.rooms[i].uid){
+                foundRoom = true;
+                this.rooms[i].addClient(clientUid);
+                break;
+            }
+        }
+        if (!foundRoom){
+            const newRoom = new Room(roomUid);
+            newRoom.addClient(clientUid);
+        }
+    }
+
+    removeFromRoom(client){
+        for (let i = 0; i < this.rooms.length; i++){
+            if (client.roomUid === this.rooms[i].uid){
+                this.rooms[i].removeClient(clientUid);
+                if (!this.rooms[i].clients.length){
+                    this.rooms.splice(i, 1);
+                }
+                break;
+            }
+        }
     }
 
     /**
@@ -37,9 +70,10 @@ class Server{
      */
     handleDisconnect(client){
         // Remove the client from the array of clients
-        for(let i = 0; i < this._clients.length; i++){
-            if(this._clients[i].socket.id === client.socket.id){
-                this._clients.splice(i, 1);
+        for(let i = 0; i < this.clients.length; i++){
+            if(this.clients[i].socket.id === client.socket.id){
+                this.removeFromRoom(clients[i]);
+                this.clients.splice(i, 1);
             }
         }
 	}
