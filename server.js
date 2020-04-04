@@ -1,6 +1,6 @@
 const express = require('express');
 const io = require('socket.io');
-const createServer = require('http').createServer;
+const createServer = require('https').createServer;
 
 const Client = require('./lib/Client');
 const Room = require('./lib/Room');
