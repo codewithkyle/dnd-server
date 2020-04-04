@@ -1,16 +1,22 @@
 const express = require('express');
 const io = require('socket.io');
 const createServer = require('https').createServer;
+const fs = require('fs');
 
 const Client = require('./lib/Client');
 const Room = require('./lib/Room');
+
+var options = {
+    key: fs.readFileSync('./file.pem'),
+    cert: fs.readFileSync('./file.crt')
+  };
 
 class Server{
     constructor(){
         
         // Server
         this.app       = express();
-        this.server    = createServer(this.app);
+        this.server    = createServer(options, this.app);
         this.io        = io(this.server);
 
         // Sockets
