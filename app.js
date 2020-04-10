@@ -66,6 +66,11 @@ class Server{
                 const room = this.getRoom(client.roomUid);
                 room.handleNPCPing(name);
             });
+
+            socket.on('clear-order', () => {
+                const room = this.getRoom(client.roomUid);
+                room.clearInitiationOrder();
+            });
         });
     }
 
