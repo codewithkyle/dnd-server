@@ -16,7 +16,10 @@ class Server{
             this.debug = true;
             this.server = createServer(this.app);
         }
-        this.io = io(this.server);
+        this.io = io(this.server, {
+            pingInterval: 120000,
+            pingTimeout: 90000,
+        });
         this.clients = [];
         this.rooms = [];
         this.init();
@@ -70,6 +73,12 @@ class Server{
             socket.on('clear-order', () => {
                 const room = this.getRoom(client.roomUid);
                 room.clearInitiationOrder();
+            });
+
+            socket.on('heartbeat', () => {
+                if (this.debug){
+                    console.log(`${client.name} is still alive`);
+                }
             });
         });
     }
