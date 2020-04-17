@@ -76,9 +76,17 @@ class Server{
             });
 
             socket.on('heartbeat', () => {
-                if (this.debug){
-                    console.log(`${client.name} is still alive`);
-                }
+                client.tick();
+            });
+
+            socket.on('load-map', (url) => {
+                const room = this.getRoom(client.roomUid);
+                room.loadMap(url);
+            });
+
+            socket.on('update-position', (data) => {
+                const room = this.getRoom(client.roomUid);
+                room.updatePosition(data);
             });
         });
     }
