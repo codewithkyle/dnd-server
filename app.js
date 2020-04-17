@@ -88,6 +88,11 @@ class Server{
                 const room = this.getRoom(client.roomUid);
                 room.updatePosition(data);
             });
+
+            socket.on('init-map', () => {
+                const room = this.getRoom(client.roomUid);
+                room.initUserMap(client);
+            });
         });
     }
 
