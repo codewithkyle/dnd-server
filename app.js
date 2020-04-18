@@ -95,6 +95,10 @@ class Server{
             socket.on('ping-pos', (pos) => {
                 client.room.pingPos(pos, client.uid);
             });
+
+            socket.on('place-pin', (data) => {
+                client.room.placePin(data);
+            });
         });
     }
 
