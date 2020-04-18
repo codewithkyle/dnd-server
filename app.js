@@ -111,6 +111,14 @@ class Server{
             socket.on('remove-entity', (uid) => {
                 client.room.removeEntity(uid);
             });
+
+            socket.on('render-drawing', (drawing) => {
+                client.room.renderDynamicMap(drawing, client.uid);
+            });
+
+            socket.on('clear-drawing', () => {
+                client.room.clearDynamicMap(client.uid);
+            });
         });
     }
 
