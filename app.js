@@ -103,6 +103,14 @@ class Server{
             socket.on('add-entity', (data) => {
                 client.room.addEntity(data);
             });
+
+            socket.on('remove-pin', (uid) => {
+                client.room.removePin(uid);
+            });
+
+            socket.on('remove-entity', (uid) => {
+                client.room.removeEntity(uid);
+            });
         });
     }
 
