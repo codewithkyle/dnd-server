@@ -93,6 +93,10 @@ class Server{
                 const room = this.getRoom(client.roomUid);
                 room.initUserMap(client);
             });
+
+            socket.on('ping-pos', (pos) => {
+                client.room.pingPos(pos, client.uid);
+            });
         });
     }
 
