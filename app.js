@@ -85,13 +85,11 @@ class Server{
             });
 
             socket.on('update-position', (data) => {
-                const room = this.getRoom(client.roomUid);
-                room.updatePosition(data);
+                client.room.updatePosition(data);
             });
 
             socket.on('init-map', () => {
-                const room = this.getRoom(client.roomUid);
-                room.initUserMap(client);
+                client.room.initUserMap(client);
             });
 
             socket.on('ping-pos', (pos) => {
