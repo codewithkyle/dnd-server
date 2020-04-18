@@ -99,6 +99,10 @@ class Server{
             socket.on('place-pin', (data) => {
                 client.room.placePin(data);
             });
+
+            socket.on('add-entity', (data) => {
+                client.room.addEntity(data);
+            });
         });
     }
 
