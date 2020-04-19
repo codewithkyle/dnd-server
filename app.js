@@ -119,6 +119,10 @@ class Server{
             socket.on('clear-drawing', () => {
                 client.room.clearDynamicMap(client.uid);
             });
+
+            socket.on('toggle-player-input', (allowPlayers) => {
+                client.room.togglePlayerInput(allowPlayers);
+            });
         });
     }
 
