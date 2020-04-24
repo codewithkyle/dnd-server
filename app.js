@@ -49,25 +49,12 @@ class Server{
                 this.removeFromRoom(client);
             });
 
-            socket.on("ping-player", (characterUid) => {
-                if (this.debug){
-                    console.log(`Recieved a ping command for ${characterUid}`);
-                }
-                const room = this.getRoom(client.roomUid);
-                room.pingPlayer(characterUid);
+            socket.on("combat-order-update", (uid) => {
+                client.room.updateCombatOrder(uid);
             });
 
             socket.on('initiation-order', (order) => {
-                const room = this.getRoom(client.roomUid);
-                room.setInitiationOrder(order);
-            });
-
-            socket.on("ping-from-npc", (name) => {
-                if (this.debug){
-                    console.log(`Recieved a ping command for ${name}`);
-                }
-                const room = this.getRoom(client.roomUid);
-                room.handleNPCPing(name);
+                client.room.setInitiationOrder(order)
             });
 
             socket.on('clear-order', () => {
