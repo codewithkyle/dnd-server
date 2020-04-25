@@ -114,6 +114,10 @@ class Server{
             socket.on('init-combat-order', () => {
                 client.room.initCombatOrder(client);
             });
+            
+            socket.on('update-entity', (data) => {
+                client.room.updateEntity(data);
+            });
         });
     }
 
