@@ -110,6 +110,10 @@ class Server{
             socket.on('toggle-player-input', (allowPlayers) => {
                 client.room.togglePlayerInput(allowPlayers);
             });
+
+            socket.on('init-combat-order', () => {
+                client.room.initCombatOrder(client);
+            });
         });
     }
 
