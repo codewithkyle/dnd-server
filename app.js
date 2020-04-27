@@ -35,14 +35,15 @@ class Server{
             this.clients.push(client);
 
             socket.on('join', (data) => {
-                client.roomUid = data.roomUid;
                 client.name = data.name;
                 client.characterUid = data.characterUid;
                 this.handleRoom(data.roomUid, client);
             });
 
             socket.on('roll', (dice) => {
-                this.rollDice(dice, client);
+                if (client.room){
+                    client.room.roll(dice, client);
+                }
             });
 
             socket.on('leave', () => {
@@ -50,16 +51,21 @@ class Server{
             });
 
             socket.on("combat-order-update", (uid) => {
-                client.room.updateCombatOrder(uid);
+                if (client.room){
+                    client.room.updateCombatOrder(uid);
+                }
             });
 
             socket.on('initiation-order', (order) => {
-                client.room.setInitiationOrder(order)
+                if (client.room){
+                    client.room.setInitiationOrder(order);
+                }
             });
 
             socket.on('clear-order', () => {
-                const room = this.getRoom(client.roomUid);
-                room.clearInitiationOrder();
+                if (client.room){
+                    client.room.clearInitiationOrder();
+                }
             });
 
             socket.on('heartbeat', () => {
@@ -67,75 +73,83 @@ class Server{
             });
 
             socket.on('load-map', (url) => {
-                const room = this.getRoom(client.roomUid);
-                room.loadMap(url);
+                if (client.room){
+                    client.room.loadMap(url);
+                }
             });
 
             socket.on('update-position', (data) => {
-                client.room.updatePosition(data);
+                if (client.room){
+                    client.room.updatePosition(data);
+                }
             });
 
             socket.on('init-map', () => {
-                client.room.initUserMap(client);
+                if (client.room){
+                    client.room.initUserMap(client);
+                }
             });
 
             socket.on('ping-pos', (pos) => {
-                client.room.pingPos(pos, client.uid);
+                if (client.room){
+                    client.room.pingPos(pos, client.uid);
+                }
             });
 
             socket.on('place-pin', (data) => {
-                client.room.placePin(data);
+                if (client.room){
+                    client.room.placePin(data);
+                }
             });
 
             socket.on('add-entity', (data) => {
-                client.room.addEntity(data);
+                if (client.room){
+                    client.room.addEntity(data);
+                }
             });
 
             socket.on('remove-pin', (uid) => {
-                client.room.removePin(uid);
+                if (client.room){
+                    client.room.removePin(uid);
+                }
             });
 
             socket.on('remove-entity', (uid) => {
-                client.room.removeEntity(uid);
+                if (client.room){
+                    client.room.removeEntity(uid);
+                }
             });
 
             socket.on('render-drawing', (drawing) => {
-                client.room.renderDynamicMap(drawing, client.uid);
+                if (client.room){
+                    client.room.renderDynamicMap(drawing, client.uid);
+                }
             });
 
             socket.on('clear-drawing', () => {
-                client.room.clearDynamicMap(client.uid);
+                if (client.room){
+                    client.room.clearDynamicMap(client.uid);
+                }
             });
 
             socket.on('toggle-player-input', (allowPlayers) => {
-                client.room.togglePlayerInput(allowPlayers);
+                if (client.room) {
+                    client.room.togglePlayerInput(allowPlayers);
+                }
             });
 
             socket.on('init-combat-order', () => {
-                client.room.initCombatOrder(client);
+                if (client.room){
+                    client.room.initCombatOrder(client);
+                }
             });
             
             socket.on('update-entity', (data) => {
-                client.room.updateEntity(data);
+                if (client.room){
+                    client.room.updateEntity(data);
+                }
             });
         });
-    }
-
-    getRoom(roomUid){
-        for (let i = 0; i < this.rooms.length; i++){
-            if (roomUid === this.rooms[i].uid){
-                return this.rooms[i];
-            }
-        }
-    }
-
-    rollDice(dice, client){
-        for (let i = 0; i < this.rooms.length; i++){
-            if (client.roomUid === this.rooms[i].uid){
-                this.rooms[i].roll(dice, client);
-                break;
-            }
-        }
     }
 
     handleRoom(roomUid, client){
@@ -155,13 +169,10 @@ class Server{
     }
 
     removeFromRoom(client){
-        for (let i = 0; i < this.rooms.length; i++){
-            if (client.roomUid === this.rooms[i].uid){
-                this.rooms[i].removeClient(client);
-                if (this.rooms[i].clients.length === 0){
-                    this.rooms.splice(i, 1);
-                }
-                break;
+        client.room.removeClient(client);
+        for (let i = this.rooms.length - 1; i >= 0; i--){
+            if (this.rooms[i].clients.length === 0){
+                this.rooms.splice(i, 1);
             }
         }
     }
