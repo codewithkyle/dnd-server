@@ -169,10 +169,12 @@ class Server{
     }
 
     removeFromRoom(client){
-        client.room.removeClient(client);
-        for (let i = this.rooms.length - 1; i >= 0; i--){
-            if (this.rooms[i].clients.length === 0){
-                this.rooms.splice(i, 1);
+        if (client.room){
+            client.room.removeClient(client);
+            for (let i = this.rooms.length - 1; i >= 0; i--){
+                if (this.rooms[i].clients.length === 0){
+                    this.rooms.splice(i, 1);
+                }
             }
         }
     }
